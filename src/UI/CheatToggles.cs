@@ -23,6 +23,26 @@ public struct CheatToggles
     public static bool fakeRevive;
     public static bool invertControls;
     public static bool moonWalk;
+        // SickoMenu extras
+        public static bool rotateEveryone;
+        public static bool suicideAllCrew;
+        public static bool suicideAllImps;
+        public static bool scanEveryone;
+        public static bool stopScanEveryone;
+        public static bool bypassGuardianAngel;
+        public static bool disableLobbyMusic;
+        public static bool disableKillAnimation;
+        public static bool randomizeAppearance;
+        public static bool cycleAppearance;
+        public static bool impersonatePlayer;
+        public static bool cosmeticsStealer;
+        public static bool cosmeticsResetter;
+        public static bool forceNameEveryone;
+        public static bool forceColorEveryone;
+        public static bool forceLevelEveryone;
+        public static bool forceMeetingByPlayer;
+        public static bool whisperToPlayer;
+        public static bool chatAsPlayer;
 
     // Roles
     public static bool changeRole;
@@ -147,6 +167,26 @@ public struct CheatToggles
     // Config
     public static bool reloadConfig;
     public static bool rgbMode;
+
+    // Settings
+    public static bool showKeybinds;
+    public static bool allowKeybindsWhileChatting;
+    public static bool adjustByDPI;
+
+    // Color & appearance
+    public static bool setColor;
+    public static bool snipeColor;
+    public static int colorSelection; // 0-9 id
+
+    // Display
+    public static bool showHost;
+    public static bool showFps;
+    public static bool setFPS;
+    public static int targetFPS;
+
+    // Chat
+    public static bool spamChat;
+    public static string chatSpamMessage;
 
     // Keybind Map: Toggle Name -> KeyCode (KeyCode.None == No Key)
     public static readonly Dictionary<string, KeyCode> Keybinds = new();

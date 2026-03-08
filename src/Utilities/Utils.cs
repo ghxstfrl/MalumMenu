@@ -292,15 +292,44 @@ public static class Utils
 
     }
 
-    // Returns a list of all the players in the game ordered from closest to farthest (from LocalPlayer by default)
-    public static System.Collections.Generic.List<PlayerControl> GetPlayersSortedByDistance(PlayerControl source = null)
+    // Returns a random other player (not local) or null if none exist
+    public static PlayerControl GetRandomOtherPlayer()
     {
+        var others = PlayerControl.AllPlayerControls.Where(p => p != PlayerControl.LocalPlayer && p != null).ToList();
+        if (others.Count == 0) return null;
+        return others[UnityEngine.Random.Range(0, others.Count)];
+    }
 
-        if (source.IsNull())
+    // Copy cosmetics and color from one player to another
+    public static void CopyCosmetics(PlayerControl source, PlayerControl target)
+    {
+        if (source == null || target == null) return;
+        try
         {
-            source = PlayerControl.LocalPlayer;
+            target.Data.Color = source.Data.Color;
+            target.CurrentOutfit.ColorId = source.CurrentOutfit.ColorId;
+            target.CurrentOutfit.HatId = source.CurrentOutfit.HatId;
+            target.CurrentOutfit.SkinId = source.CurrentOutfit.SkinId;
+            target.CurrentOutfit.PetId = source.CurrentOutfit.PetId;
+            target.CurrentOutfit.BuddyId = source.CurrentOutfit.BuddyId;
         }
+        catch { }
+    }
 
+    // Reset a player's cosmetics to defaults (first option in each category)
+    public static void ResetCosmetics(PlayerControl player)
+    {
+        if (player == null) return;
+        try
+        {
+            player.CurrentOutfit.ColorId = 0;
+            player.CurrentOutfit.HatId = 0;
+            player.CurrentOutfit.SkinId = 0;
+            player.CurrentOutfit.PetId = 0;
+            player.CurrentOutfit.BuddyId = 0;
+        }
+        catch { }
+    }
         System.Collections.Generic.List<PlayerControl> outputList = new System.Collections.Generic.List<PlayerControl>();
 
         outputList.Clear();
@@ -449,16 +478,13 @@ public static class Utils
         var platform = "Unknown";
         try { platform = PlatformTypeToString(player.PlatformData.Platform); } catch { }
 
-        //var puid = player.ProductUserId;
-        //var friendcode = player.FriendCode;
-
         var roleColor = ColorUtility.ToHtmlStringRGB(playerInfo.Role.TeamColor);
 
-        var hostString = player == host ? "Host - " : "";
+        // only show host label if toggle enabled and this player actually is host
+        var hostString = (CheatToggles.showHost && player == host) ? "Host - " : "";
 
         if (CheatToggles.seeRoles)
         {
-
             if (CheatToggles.showPlayerInfo)
             {
                 if (isChat)
@@ -501,7 +527,9 @@ public static class Utils
                 {
                     if (isChat)
                     {
-                        nameTag = $"{nameTag} <size=70%><color=#fb0>{hostString}Lv:{level} - {platform}</color></size>";
+                        nameTag = $"{nameTag}";
+                        if (!string.IsNullOrEmpty(hostString))
+                            nameTag += $" <size=70%><color=#fb0>{hostString}Lv:{level} - {platform}</color></size>";
                         return nameTag;
                     }
 
@@ -510,10 +538,18 @@ public static class Utils
             }
             else
             {
-                if (PlayerControl.LocalPlayer.Data.Role.NameColor != playerInfo.Role.NameColor || isChat)
+                if (PlayerControl.LocalPlayer.Data.Role.NameColor != playerInfo.Role.NameColor && !isChat)
                     return nameTag;
 
-                nameTag = $"<color=#{ColorUtility.ToHtmlStringRGB(playerInfo.Role.NameColor)}>{nameTag}</color>";
+                if (isChat && !string.IsNullOrEmpty(hostString))
+                {
+                    nameTag = $"{nameTag} <size=70%><color=#fb0>{hostString}Lv:{level} - {platform}</color></size>";
+                    return nameTag;
+                }
+                if (!isChat && !string.IsNullOrEmpty(hostString))
+                {
+                    nameTag = $"<size=70%><color=#fb0>{hostString}Lv:{level} - {platform}</color></size>\r\n{nameTag}";
+                }
             }
         }
 
